@@ -1,12 +1,14 @@
 #include <raylib.h>
-#include "gameLoop.c"
-#include "endConditions.c"
-#include "wordGenerators.c"
+#include "gameLoop.cpp"
+#include "endConditions.cpp"
+#include "wordGenerators.cpp"
 
 int main() {
 
     // Create the window
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(800, 800, "penguinKeys");
+    SetTargetFPS(60);
 
     // Gameloop
     while (!WindowShouldClose()) {
