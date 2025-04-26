@@ -1,7 +1,7 @@
 #include <raylib.h>
+#include <deque>
 #include <iostream>
 using namespace std;
-#include <deque>
 
 #include "styleSettings.cpp"
 
@@ -9,7 +9,7 @@ using namespace std;
 
 class GameLogic {
 public:
-
+    
     // Game counters
     int typedWords;
     int mistakes;
@@ -33,9 +33,6 @@ public:
      */
 
     void reorderDeck () {
-        if (!IsWindowResized())
-           return;
-
         for (int lineIndex = 0; lineIndex < numberOfVisibleLines;lineIndex ++) {
             deque<string>* currentLine = &(text[lineIndex]);
             deque<string>* nextLine = &(text[lineIndex + 1]);
@@ -100,6 +97,10 @@ public:
 
     float getHorizontalBlankSpaceStart() {
         return horizontalBlankSpacePercent * GetScreenWidth();
+    }
+
+    float getVerticalBlankSpaceStart() {
+        return verticalBlankSpacePercent * GetScreenHeight();
     }
 
     float getHorizontalBlankSpaceEnd() {

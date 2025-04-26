@@ -9,31 +9,37 @@ using namespace std;
 
 #pragma once
 
-
 typedef struct {
     bool (*endCondition) (GameLogic* );
+    // Set to 0 if there is no maximum
+    int maxNumberOfWords;
     string (*wordGenerator) ();
 } gameSettings;
+
+void fillDeck (gameSettings* settings, GameLogic* game) {
+    int fillNumber = 50;
+
+    for (int i = 0; i < fillNumber; i++) {
+        game->text[0].push_back(settings->wordGenerator());
+    }
+    
+    game->reorderDeck();
+}
 
 int startGame (gameSettings* settings) {
     GameLogic gameLogic;
 
+    fillDeck(settings, &gameLogic);
+
     // Current game loop
     while (!settings->endCondition(&gameLogic)) {
         // Process game logic
-        gameLogic.reorderDeck();
+        if (IsWindowResized())
+            gameLogic.reorderDeck();
 
         BeginDrawing();
         string test = "Hello! this is a small test!";
-        DrawText(gameLogic.dequeToPrintableText().c_str(),gameLogic.getHorizontalBlankSpaceStart() , GetScreenHeight() / 2, fontSize, WHITE);
-
-        /*
-        if (!gameLogic.stringFitsOnScreen(test)) {
-            cout << "ouch I dont fit!" << "\n";
-        } else {
-            cout << "I fit!" << "\n";
-        }
-        */
+        DrawText(gameLogic.dequeToPrintableText().c_str(),gameLogic.getHorizontalBlankSpaceStart() , gameLogic.getVerticalBlankSpaceStart(), fontSize, WHITE);
 
         ClearBackground(PURPLE);
         EndDrawing();

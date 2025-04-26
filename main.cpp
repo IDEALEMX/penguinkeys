@@ -12,7 +12,7 @@ int main() {
 
     // Gameloop
     while (!WindowShouldClose()) {
-        gameSettings testSettings = {&neverEnd, &penguin};
+        gameSettings testSettings = {&neverEnd, 0, &penguin};
         startGame(&testSettings);
     }
 
