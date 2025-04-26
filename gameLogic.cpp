@@ -71,13 +71,26 @@ public:
             }
         }
     }
+    
+    string preGenerated;
 
+    /*
+     * Returns the text deque as a string
+     * if there is no window resizing it will
+     * return the previously pre-generated text
+     * to avoid unnecesary computations
+     */
+        
     string dequeToPrintableText() {
+        if (!IsWindowResized() && !preGenerated.empty())
+             return preGenerated;
+
         string result = "";
         for (int lineIndex = 0; lineIndex < numberOfVisibleLines; lineIndex ++) {
             deque<string> currentLine = text[lineIndex];
             result = result + lineToString(&currentLine) + "\n";
         }
+        preGenerated = result;
         return result;
     }
 

@@ -24,6 +24,7 @@ void fillDeck (gameSettings* settings, GameLogic* game) {
     }
     
     game->reorderDeck();
+    game->dequeToPrintableText();
 }
 
 int startGame (gameSettings* settings) {
@@ -38,7 +39,6 @@ int startGame (gameSettings* settings) {
             gameLogic.reorderDeck();
 
         BeginDrawing();
-        string test = "Hello! this is a small test!";
         DrawText(gameLogic.dequeToPrintableText().c_str(),gameLogic.getHorizontalBlankSpaceStart() , gameLogic.getVerticalBlankSpaceStart(), fontSize, WHITE);
 
         ClearBackground(PURPLE);
