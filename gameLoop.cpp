@@ -24,7 +24,14 @@ void fillDeck (gameSettings* settings, GameLogic* game) {
     }
     
     game->reorderDeck();
-    game->dequeToPrintableText();
+}
+
+string emptyString(int size) {
+    string newString = "";
+    for (int i = 0; i < size; i++) {
+        newString.append("  ");
+    }
+    return newString;
 }
 
 int startGame (gameSettings* settings) {
@@ -34,14 +41,20 @@ int startGame (gameSettings* settings) {
 
     // Current game loop
     while (!settings->endCondition(&gameLogic)) {
+
         // Process game logic
         if (IsWindowResized())
             gameLogic.reorderDeck();
 
-        BeginDrawing();
-        DrawText(gameLogic.dequeToPrintableText().c_str(),gameLogic.getHorizontalBlankSpaceStart() , gameLogic.getVerticalBlankSpaceStart(), fontSize, WHITE);
+        // process key input
+        if (IsKeyPressed(KEY_N)) {
+            gameLogic.currentCharacter += 1;
+        }
 
+        // Drawing
+        BeginDrawing();
         ClearBackground(PURPLE);
+        gameLogic.drawText();
         EndDrawing();
     }
 

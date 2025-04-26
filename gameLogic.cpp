@@ -1,5 +1,6 @@
 #include <raylib.h>
 #include <deque>
+#include <array>
 #include <iostream>
 using namespace std;
 
@@ -13,9 +14,10 @@ public:
     // Game counters
     int typedWords;
     int mistakes;
+    int currentCharacter = 0;
 
     // Loaded words
-    deque<string> line1 = {"hello!", "this", "is", "a", "little", "test",":)"};
+    deque<string> line1;
     deque<string> line2;
     deque<string> line3;
     deque<string> overflow;
@@ -72,7 +74,7 @@ public:
         }
     }
     
-    string preGenerated;
+    array<string, 3>preGenerated;
 
     /*
      * Returns the text deque as a string
@@ -81,21 +83,20 @@ public:
      * to avoid unnecesary computations
      */
         
-    string dequeToPrintableText() {
-        if (!IsWindowResized() && !preGenerated.empty())
-             return preGenerated;
+    string lineToString(int lineNumber) {
+        if (!IsWindowResized() && !preGenerated[lineNumber].empty())
+             return preGenerated[lineNumber];
 
         string result = "";
-        for (int lineIndex = 0; lineIndex < numberOfVisibleLines; lineIndex ++) {
-            deque<string> currentLine = text[lineIndex];
-            result = result + lineToString(&currentLine) + "\n";
+        deque<string>* line = &text[lineNumber];
+        for (int i = 0; i < line->size(); i++) {
+            result += (*line)[i];
         }
-        preGenerated = result;
+        preGenerated[lineNumber] = result;
         return result;
     }
 
     string lineToString (deque<string>* line) {
-
         if (line->empty())
             return "";
 
@@ -125,5 +126,24 @@ public:
         int textWidth = MeasureText(inputString.c_str(), fontSize);
         return textWidth < GetScreenWidth() - getHorizontalBlankSpaceStart() * 2;
     }
-    
+
+    void drawText() {
+        for (int i = 0; i < numberOfVisibleLines; i++) {
+            deque<string>* line = &text[i];
+            string fullText = lineToString(line);
+            Vector2 position = {getHorizontalBlankSpaceStart(), getVerticalBlankSpaceStart() + verticalSpacing * i};
+
+            if (i == 0) {
+                string typed = fullText.substr(0, currentCharacter);
+                string unTyped = fullText.substr(currentCharacter);
+                Vector2 sizeOfTyped = MeasureTextEx(font, typed.c_str(), fontSize, 1);
+                Vector2 unTypedStart = {position.x + sizeOfTyped.x, position.y};
+                DrawTextEx(font, typed.c_str(), position , fontSize, 1, BLUE);
+                DrawTextEx(font, unTyped.c_str(), unTypedStart, fontSize, 1, WHITE);
+                continue;
+            }
+
+            DrawTextEx(font, fullText.c_str(), position , fontSize, 1, WHITE);
+        }
+    }
 };

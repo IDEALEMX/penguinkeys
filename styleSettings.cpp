@@ -1,7 +1,27 @@
+#include <raylib.h>
+
 # pragma once
 
 // What percent of the screen will be clear on the sides 
-float horizontalBlankSpacePercent = 0.10;
-float verticalBlankSpacePercent = 0.20;
+float horizontalBlankSpacePercent;
+float verticalBlankSpacePercent;
 
-int fontSize = 40;
+// Font info
+
+Font font;
+int fontSize;
+int verticalSpacing;
+
+void loadValues() {
+    // What percent of the screen will be clear on the sides 
+    horizontalBlankSpacePercent = 0.10;
+    verticalBlankSpacePercent = 0.20;
+
+    // Font info
+
+    font = GetFontDefault();
+    fontSize = 40;
+    verticalSpacing = 40;
+}
+
+
