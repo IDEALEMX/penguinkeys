@@ -6,6 +6,7 @@ using namespace std;
 
 #include "styleSettings.cpp"
 #include "gameLogic.cpp"
+#include "keyPresses.cpp"
 
 #pragma once
 
@@ -46,15 +47,30 @@ int startGame (gameSettings* settings) {
         if (IsWindowResized())
             gameLogic.reorderDeck();
 
+        if (gameLogic.text[3].size() < 30)
+            fillDeck(settings, &gameLogic);
+
         // process key input
-        if (IsKeyPressed(KEY_N)) {
+        char upcomingCharacter = gameLogic.lineToString(&gameLogic.text[0])[gameLogic.currentCharacter];
+        keyInputType input = getKeyInput(upcomingCharacter);
+        
+        if (input == correctKeyInput)
             gameLogic.currentCharacter += 1;
+
+        if (input == correctKeyAndSpace) {
+            gameLogic.currentCharacter += 1;
+            gameLogic.typedWords +=1;
         }
+
+        if (input == wrongKeyInput)
+            gameLogic.mistakes += 1;
 
         // Drawing
         BeginDrawing();
         ClearBackground(PURPLE);
+        gameLogic.checkIfNeedsLineSkip();
         gameLogic.drawText();
+        gameLogic.drawHUD();
         EndDrawing();
     }
 

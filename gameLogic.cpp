@@ -12,8 +12,8 @@ class GameLogic {
 public:
     
     // Game counters
-    int typedWords;
-    int mistakes;
+    int typedWords = 0;
+    int mistakes = 0;
     int currentCharacter = 0;
 
     // Loaded words
@@ -83,26 +83,17 @@ public:
      * to avoid unnecesary computations
      */
         
-    string lineToString(int lineNumber) {
-        if (!IsWindowResized() && !preGenerated[lineNumber].empty())
-             return preGenerated[lineNumber];
-
-        string result = "";
-        deque<string>* line = &text[lineNumber];
-        for (int i = 0; i < line->size(); i++) {
-            result += (*line)[i];
-        }
-        preGenerated[lineNumber] = result;
-        return result;
-    }
-
     string lineToString (deque<string>* line) {
         if (line->empty())
             return "";
 
         string resultString;
-        for (int i = 0; i < line->size() ;i++) {
-            resultString = resultString + (*line)[i] + " ";
+        for (int i = 0 ; i < line->size() ;i++) {
+            if (i == line->size() - 1) {
+                resultString += (*line)[i];
+                break;
+            }
+            resultString += (*line)[i] + " ";
         }
         return resultString;
     }
@@ -122,9 +113,24 @@ public:
         return width - horizontalBlankSpacePercent * width;
     }
 
+    float getVerticalBlankSpaceEnd() {
+        int height = GetScreenHeight();
+        return height - verticalBlankSpacePercent * height;
+    }
+
     bool stringFitsOnScreen(const string inputString) {
         int textWidth = MeasureText(inputString.c_str(), fontSize);
         return textWidth < GetScreenWidth() - getHorizontalBlankSpaceStart() * 2;
+    }
+
+    void checkIfNeedsLineSkip() {
+        deque<string>* firstLine = &text[0];
+        int firstLineSize = lineToString(firstLine).size();
+        if (currentCharacter > firstLineSize) {
+            firstLine->clear();
+            reorderDeck();
+            currentCharacter -= firstLineSize + 1;
+        }
     }
 
     void drawText() {
@@ -145,5 +151,23 @@ public:
 
             DrawTextEx(font, fullText.c_str(), position , fontSize, 1, WHITE);
         }
+    }
+
+    void drawHUD() {
+        string wordCountText = "Words: " + to_string(typedWords);
+        string mistakeCountText = "Mistakes: " + to_string(mistakes);
+        int mistakePositionX = getHorizontalBlankSpaceEnd() - MeasureText(mistakeCountText.c_str(), fontSize) - getHorizontalBlankSpaceStart();
+        
+        // Branching to prevent overlap
+        
+        const int maxStringOverlap = 20;
+        if (getHorizontalBlankSpaceStart() + MeasureText(wordCountText.c_str(), fontSize) + maxStringOverlap >= mistakePositionX) {
+            DrawText(wordCountText.c_str(), getHorizontalBlankSpaceStart(), getVerticalBlankSpaceEnd() - verticalSpacing, fontSize, WHITE);
+            DrawText(mistakeCountText.c_str(), getHorizontalBlankSpaceStart(), getVerticalBlankSpaceEnd(), fontSize, WHITE);
+            return;
+        }
+
+        DrawText(wordCountText.c_str(), getHorizontalBlankSpaceStart(), getVerticalBlankSpaceEnd(), fontSize, WHITE);
+        DrawText(mistakeCountText.c_str(), mistakePositionX, getVerticalBlankSpaceEnd(), fontSize, WHITE);
     }
 };
